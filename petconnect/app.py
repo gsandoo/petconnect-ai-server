@@ -33,7 +33,7 @@ def create_app():
     
     @app.route('/' ,methods=['GET', 'POST'])
     def connect_with_android():
-        return "Flask Server & Android are Working Successfully"
+        return "Flask Server & Cloud Functions are Working Successfully"
     return app
 
 
