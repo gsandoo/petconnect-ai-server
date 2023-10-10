@@ -168,10 +168,6 @@ def get_path(path):
 #                 newuser.close()
 
 
-@bp.route('/user/<username>')
-def name_print(username):
-    return f"hello {username}" , 200
-
 # [등록 API]
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
