@@ -1,8 +1,7 @@
-FROM python:latest
-RUN mkdir myapp/
-COPY app.py myapp/app.py
+FROM python:3.7
+COPY . /app
 COPY requirements.txt myapp/requirements.txt
-WORKDIR /myapp/
+WORKDIR /app
 RUN pip install -r requirements.txt
 EXPOSE 8000
 CMD ["python", "app.py"]
