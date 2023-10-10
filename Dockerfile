@@ -1,13 +1,8 @@
-FROM python:3.8
-
-RUN apt-get update
-RUN apt-get install python3-pip -y
-
-COPY . /app
-WORKDIR /app
-
+FROM python:3.7
+RUN mkdir myapp/
+COPY app.py myapp/app.py
+COPY requirements.txt myapp/requirements.txt
+WORKDIR /myapp/
 RUN pip install -r requirements.txt
-
 EXPOSE 5000
-
 CMD ["python", "app.py"]
