@@ -13,10 +13,11 @@ from flask_sqlalchemy import SQLAlchemy
 db=SQLAlchemy()
 migrate=Migrate()
 
+app = Flask(__name__)
+    
 
 #flask 애플리케이션 팩토링 -> app 전역변수 지양
 def create_app():
-    app = Flask(__name__)
     
     # app.config.from_object(config)
 

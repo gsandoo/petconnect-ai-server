@@ -1,10 +1,14 @@
-FROM python:3.7
+FROM python
 
-RUN apt-get -y update
-COPY requirements.txt myapp/requirements.txt
+COPY . /app
+WORKDIR /app
 
-RUN pip install -r requirements.txt
-RUN pip install opencv_python-3.4.2.16-cp37-cp37m-win_amd64.whl
-RUN pip install opencv_contrib_python-3.4.2.16-cp37-cp37m-win_amd64.whl
-EXPOSE 5000
-CMD ["python", "app.py" ]
+RUN echo server will be running on 5000
+RUN pip install flask
+RUN pip install flask-migrate
+RUN pip install flask-sqlalchemy
+
+
+
+CMD ["python" , "test.py"]
+
