@@ -22,8 +22,8 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
     reg_num = uniquenumber(details['phoneNum'][7:11])
     print('reg_num =' + reg_num)
     # 프로필 이미지
-    profile.save('./static/img/%s' % (reg_num) + '.jpg')
-    profileUrl = "./profileImg/%s" % (reg_num)
+    profile.save(os.getcwd() + '/static/img/%s' % (reg_num) + '.jpg')
+    profileUrl = os.getcwd() + "/profileImg/%s" % (reg_num)
 
     createFolder('./SVM-Classifier/image/%s' % (reg_num))
     createFolder('./SVM-Classifier/rawimage/%s' % (reg_num))
@@ -199,7 +199,8 @@ def register():
    
     try:
         # 경로 설정
-        path = '../nose/SVM-Classifier'
+        path = os.getcwd()+ 'nose/SVM-Classifier'
+        print(os.path.abspath(path))
         classify_path = get_path(os.path.abspath(path))
         print(classify_path)
         os.chdir(classify_path)
