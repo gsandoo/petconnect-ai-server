@@ -5,16 +5,19 @@ from skimage.feature import hog
 import pickle
 import pymysql
 
+#path adjusting
+def get_path(path):
+    change_path = path.replace("\\",'/')
+    return change_path
+
 bp = Blueprint('eye', __name__, url_prefix='/eye')
 
-# 현재 파일의 디렉토리 경로
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-# eye_model.pkl의 상대 경로 계산
-eye_model_path = os.path.join(current_dir, '..', '..', 'eye', 'SVM-Classifier', 'eye.pkl')
+# eye.pkl의 상대 경로 계산
+path = '../eye/SVM-Classifier/eye_model.pkl'
+classify_path = get_path(os.path.abspath(path))
 
 # SVM 모델 로드
-with open(eye_model_path, 'rb') as model_file:
+with open(classify_path, 'rb') as model_file:
     svm_model = pickle.load(model_file)
 
 categories = ['cataracts', 'cherry_eye', 'normal']
@@ -36,11 +39,11 @@ def db_connector():
 @bp.route('/', methods=['POST'])
 def analyze_eye():
     if 'file' not in request.files:
-        return jsonify({'error': 'No file part'})
+        return jsonify({'error': 'No file part', 'message': 'fail'})
 
     file = request.files['file']
     if file.filename == '':
-        return jsonify({'error': 'No selected file'})
+        return jsonify({'error': 'No selected file', 'message': 'fail'})
 
     if file:
         # Create the 'uploads' directory if it doesn't exist
@@ -76,11 +79,11 @@ def analyze_eye():
             cursor.close()
             db_conn.close()
 
-            return jsonify({'result': predicted_category})
+            return jsonify({'result': predicted_category, 'message': 'success'})
 
         except Exception as e:
             print("Error storing result in the database:", e)
-            return jsonify({'error': 'Failed to store result in the database'})
+            return jsonify({'error': 'Failed to store result in the database', 'message': 'faill'})
 
 @bp.route('/<dogRegistNum>', methods=['GET'])
 def get_eye_result(dogRegistNum):

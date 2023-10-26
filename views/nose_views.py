@@ -199,7 +199,7 @@ def register():
    
     try:
         # 경로 설정
-        path = os.getcwd()+ 'nose/SVM-Classifier'
+        path = os.getcwd()+ '/nose/SVM-Classifier'
         print(os.path.abspath(path))
         classify_path = get_path(os.path.abspath(path))
         print(classify_path)
