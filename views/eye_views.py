@@ -10,11 +10,12 @@ def get_path(path):
     change_path = path.replace("\\",'/')
     return change_path
 
-bp = Blueprint('eye', __name__, url_prefix='/eye')
+bp = Blueprint('eye', __name__, url_prefix='/')
 
 # eye.pkl의 상대 경로 계산
 path = '../eye/SVM-Classifier/eye_model.pkl'
-classify_path = get_path(os.path.abspath(path))
+classify_path = '/app/eye/SVM-Classifier/eye_model.pkl'
+#get_path(os.path.abspath(path))
 
 # SVM 모델 로드
 with open(classify_path, 'rb') as model_file:
@@ -22,7 +23,7 @@ with open(classify_path, 'rb') as model_file:
 
 categories = ['cataracts', 'cherry_eye', 'normal']
 
-# db
+# db -- 추후 삭제 --
 def db_connector():
     db_params = {
         'host': 'localhost',
@@ -36,7 +37,7 @@ def db_connector():
     connector = pymysql.connect(**db_params)
     return connector
 
-@bp.route('/', methods=['POST'])
+@bp.route('/eye', methods=['POST'])
 def analyze_eye():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part', 'message': 'fail'})
@@ -68,6 +69,8 @@ def analyze_eye():
 
         # Store the result in the database
         try:
+            
+            #  여기 db 수정 코드 지환님한테 옮기기
             db_conn = db_connector()
             cursor = db_conn.cursor()
 

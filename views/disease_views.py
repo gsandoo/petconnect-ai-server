@@ -11,13 +11,12 @@ def get_path(path):
     return change_path
 
 
-bp = Blueprint('disease', __name__, url_prefix='/disease')
-
-
+bp = Blueprint('disease', __name__, url_prefix='/')
 
 # disease_model.pkl의 상대 경로 계산
 path = '../disease/SVM-Classifier/disease_model.pkl'
-classify_path = get_path(os.path.abspath(path))
+classify_path = '/app/disease/SVM-Classifier/disease_model.pkl'
+# classify_path = get_path(os.path.abspath(path))
 
 with open(classify_path, 'rb') as model_file:
     svm_model = pickle.load(model_file)
@@ -38,7 +37,7 @@ def db_connector():
     connector = pymysql.connect(**db_params)
     return connector
 
-@bp.route('/', methods=['POST'])
+@bp.route('/disease', methods=['POST'])
 def analyze_disease():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
@@ -70,6 +69,8 @@ def analyze_disease():
 
         # Store the result in the database
         try:
+            
+            #  여기 db 수정 코드 지환님한테 옮기기
             db_conn = db_connector()
             cursor = db_conn.cursor()
 
