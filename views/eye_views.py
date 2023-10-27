@@ -23,19 +23,6 @@ with open(classify_path, 'rb') as model_file:
 
 categories = ['cataracts', 'cherry_eye', 'normal']
 
-# db -- 추후 삭제 --
-def db_connector():
-    db_params = {
-        'host': 'localhost',
-        'user': 'root',
-        'password': 'Qwer12345678!',
-        'db': 'pet_connect',
-        'charset': 'utf8',
-        'cursorclass': pymysql.cursors.DictCursor
-    }
-    
-    connector = pymysql.connect(**db_params)
-    return connector
 
 @bp.route('/eye', methods=['POST'])
 def analyze_eye():
@@ -67,46 +54,27 @@ def analyze_eye():
         # Remove the temporary image file
         os.remove(image_path)
 
-        # Store the result in the database
-        try:
-            
-            #  여기 db 수정 코드 지환님한테 옮기기
-            db_conn = db_connector()
-            cursor = db_conn.cursor()
+        return jsonify({'result': predicted_category, 'message': 'success'})
 
-            query = "INSERT INTO eye_results (dogRegistNum, predicted_category) VALUES (%s, %s)"
-            values = (request.form['dogRegistNum'], predicted_category)
-            cursor.execute(query, values)
-            db_conn.commit()
+# @bp.route('/<dogRegistNum>', methods=['GET'])
+# def get_eye_result(dogRegistNum):
+#     try:
+#         db_conn = db_connector()
+#         cursor = db_conn.cursor()
 
-            cursor.close()
-            db_conn.close()
+#         query = "SELECT predicted_category FROM eye_results WHERE dogRegistNum = %s"
+#         values = (dogRegistNum,)
+#         cursor.execute(query, values)
+#         result = cursor.fetchone()
 
-            return jsonify({'result': predicted_category, 'message': 'success'})
+#         cursor.close()
+#         db_conn.close()
 
-        except Exception as e:
-            print("Error storing result in the database:", e)
-            return jsonify({'error': 'Failed to store result in the database', 'message': 'faill'})
+#         if result:
+#             return jsonify({'result': result['predicted_category']})
+#         else:
+#             return jsonify({'error': 'No result found'})
 
-@bp.route('/<dogRegistNum>', methods=['GET'])
-def get_eye_result(dogRegistNum):
-    try:
-        db_conn = db_connector()
-        cursor = db_conn.cursor()
-
-        query = "SELECT predicted_category FROM eye_results WHERE dogRegistNum = %s"
-        values = (dogRegistNum,)
-        cursor.execute(query, values)
-        result = cursor.fetchone()
-
-        cursor.close()
-        db_conn.close()
-
-        if result:
-            return jsonify({'result': result['predicted_category']})
-        else:
-            return jsonify({'error': 'No result found'})
-
-    except Exception as e:
-        print("Error retrieving result from database:", e)
-        return jsonify({'error': 'Failed to retrieve result from database'})
+#     except Exception as e:
+#         print("Error retrieving result from database:", e)
+#         return jsonify({'error': 'Failed to retrieve result from database'})
