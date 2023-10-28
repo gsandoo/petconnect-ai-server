@@ -266,7 +266,7 @@ def register():
             #     return unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, formoment1)
         
         except Exception as e:
-            print('isRegistered db에서 예외가 발생했습니다', e)
+            print('RegisteredPetDatas 정보에서 예외가 발생했습니다', e)
             return jsonify({'message': 'fail'})
 
         # finally:
