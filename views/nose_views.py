@@ -179,10 +179,12 @@ def register():
         dogNose5 = request.files['dogNose5']
         global details
         details = request.form
+        profile = request.files['dogProfile']
         forlookup = request.files['dogNose1']
-        dogid  = request.files['DogId']    
-
-        formoment1 = str(dogid)
+        dogid = details['DogId']
+        now = datetime.datetime.now()
+        formoment = str(now.year) + str(now.month) + str(now.hour) + str(now.minute) + str(now.second)
+        formoment1 = str(formoment)
         print("formoment1 = " + formoment1)
         
     # try:
@@ -215,7 +217,8 @@ def register():
 
     except Exception as e:
         print("ML코드가 안돌아가서 등록 실패", e)
-        return jsonify({'message': 'fail'})
+        return jsonify({'message': 'fail',
+                        'dogid' : dogid})
 
     if compare[1] == '등록된강아지':
         try:
@@ -230,8 +233,9 @@ def register():
                 'foundDog' : foundDog,
                 'register' : register,
                 'accuracy' : accuracy,
-                'message' : "이미 등록된 강아지 입니다.",
-                'success' : False
+                'dogid' : dogid,
+                'success' : False,
+                'message' : "이미 등록된 강아지 입니다."
             })
             # isRegistered = db_connector()
             # cursor = isRegistered.cursor()
@@ -276,8 +280,9 @@ def register():
     # 미등록강아지인 경우
     else:
         return jsonify({
-                'message' : "등록 되지 않은 강아지 입니다. 등록을 시작합니다.",
-                'success' : True
+                'success' : True,
+                'dogid' : dogid,
+                'message' : "등록 되지 않은 강아지 입니다. 등록을 시작합니다."
             })
     #     return unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, formoment1)
     
@@ -287,6 +292,7 @@ def register():
 def lookup():
     if request.method == 'POST':
         lookupimg = request.files['dogNose']
+        dogid = details['DogId']
         now1 = datetime.datetime.now()
         formomentLookup = str(now1.year) + str(now1.month) + str(now1.hour) + str(now1.minute) + str(now1.second)
         formomentLookup1 = str(formomentLookup)
@@ -324,7 +330,7 @@ def lookup():
         print(SVMresult[1]);
 
         if SVMresult[1] == '미등록강아지':
-            return jsonify({'data': {'success': False}, 'message': '조회된 강아지가 없습니다'})
+            return jsonify({'data': {'isSuccess': False}, 'message': '조회된 강아지가 없습니다', 'dogid' : dogid})
 
         # 조회 성공한 경우
         else:
@@ -336,8 +342,10 @@ def lookup():
                     'foundDog' : foundDog,
                     'register' : register,
                     'accuracy' : accuracy,
+                    'dogid' : dogid, 
                     'message' : "조회에 성공하였습니다",
                     'success' : True
+                    
                 })
             except Exception as e:
                 print("lookupdb에 예외가 발생했습니다", e)
