@@ -104,7 +104,7 @@ def main():
                 all_descriptors.append(des)
 
 
-    num_clusters = 200
+    num_clusters = 100
 
     if not os.path.isfile(dog_data_path+'/bow.pkl'):
         BoW = kmeans_bow(all_descriptors, num_clusters)
