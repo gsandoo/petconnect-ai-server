@@ -115,7 +115,7 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
             newuser = db_connector()
             cursor = newuser.cursor()
             reg_sql = "INSERT INTO Registrant (regname,regphone,regemail) VALUES(%s,%s,%s)"
-            val = (details['Registrant'], details['phoneNum'], details['email'])
+            val = (details['registrant'], details['phoneNum'], details['email'])
             cursor.execute(reg_sql, val)
 
             # primarykey
@@ -140,7 +140,7 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
             print("insert id loading complete")
 
             # db등록 정보 가져오기
-            new_fetchDB = "SELECT * FROM pet WHERE id ='%s'" % (new_latestid[0])
+            new_fetchDB = "SELECT * FROM Pet WHERE id ='%s'" % (new_latestid[0])
             cursor.execute(new_fetchDB)
             new_all = cursor.fetchall()
             print("new_all = ")
@@ -198,12 +198,21 @@ def register():
    
     try:
         # 경로 설정
-        path = 'app/nose/SVM-Classifier'
+        path = '/app/nose/SVM-Classifier'
         print(path)
         os.chdir(path)
         createFolder(path+'/testimage/%s' % (formoment1))
         forlookup.save(path+'/testimage/%s/%s.jpg' % (formoment1, formoment1))
         
+        # 테스트 경로
+        # path = os.getcwd()+ '/nose/SVM-Classifier'
+        # print(os.path.abspath(path))
+        # classify_path = get_path(os.path.abspath(path))
+        # print(classify_path)
+        # os.chdir(classify_path)
+        # createFolder(classify_path+'/testimage/%s' % (formoment1))
+        # forlookup.save(classify_path+'/testimage/%s/%s.jpg' % (formoment1, formoment1))
+       
         print("--- register start ---")
         # 5장 중 1장만 ml코드 돌리기
         result = getSVMResultForRegister(formoment1)
@@ -275,7 +284,7 @@ def lookup():
         print(formomentLookup1)
 
         # 경로 설정
-        path = get_path('app/nose/SVM-Classifier')
+        path = get_path('/app/nose/SVM-Classifier')
         print(path)
         os.chdir(path)
         createFolder(path+'/testimage/%s' % (formomentLookup1))
