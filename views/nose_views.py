@@ -198,7 +198,7 @@ def register():
    
     try:
         # 경로 설정
-        path = os.getcwd()+ 'app/nose/SVM-Classifier'
+        path = 'app/nose/SVM-Classifier'
         print(path)
         os.chdir(path)
         createFolder(path+'/testimage/%s' % (formoment1))
