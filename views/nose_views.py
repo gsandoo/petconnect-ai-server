@@ -52,7 +52,7 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
         cursor = alreadyRegistered.cursor()
 
         phone = request.form['phoneNum']
-        phone_confirm = "SELECT 1 FROM registrant WHERE regphone = '%s' " % (phone)
+        phone_confirm = "SELECT 1 FROM Registrant WHERE regphone = '%s' " % (phone)
         cursor.execute(phone_confirm)
         data = cursor.fetchall()
         print(data)
@@ -65,11 +65,11 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
     if data:
 
         try:
-            pk = "select id from registrant WHERE regphone = '%s'" % (phone)
+            pk = "select id from Registrant WHERE regphone = '%s'" % (phone)
             cursor.execute(pk)
             pk1 = cursor.fetchone()
 
-            pet_sql = "INSERT INTO pet (petname,petbreed,petbirth,petgender,petprofile,reg_id,uniquenumber) VALUES(%s,%s,%s,%s,%s,%s,%s)"
+            pet_sql = "INSERT INTO Pet (petname,petbreed,petbirth,petgender,petprofile,reg_id,uniquenumber) VALUES(%s,%s,%s,%s,%s,%s,%s)"
             val1 = (
             details['dogName'], details['dogBreed'], details['dogBirthYear'], details['dogSex'], profileUrl, pk1,
             reg_num)
@@ -81,7 +81,7 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
             latestid = cursor.fetchone()
 
             # db등록 정보 가져오기
-            fetchDB = "SELECT * FROM pet WHERE id ='%s'" % (latestid[0])
+            fetchDB = "SELECT * FROM Pet WHERE id ='%s'" % (latestid[0])
             cursor.execute(fetchDB)
             send = cursor.fetchall()
             print(send)
@@ -114,24 +114,24 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
         try:
             newuser = db_connector()
             cursor = newuser.cursor()
-            reg_sql = "INSERT INTO registrant (regname,regphone,regemail) VALUES(%s,%s,%s)"
-            val = (details['registrant'], details['phoneNum'], details['email'])
+            reg_sql = "INSERT INTO Registrant (regname,regphone,regemail) VALUES(%s,%s,%s)"
+            val = (details['Registrant'], details['phoneNum'], details['email'])
             cursor.execute(reg_sql, val)
 
             # primarykey
-            pk = "select id from registrant WHERE regphone='%s'" % (phone)
+            pk = "select id from Registrant WHERE regphone='%s'" % (phone)
             cursor.execute(pk)
             rows = cursor.fetchone()
             print("pk fetch complete")
 
             # pet table에 insert
-            pet_sql = "INSERT INTO pet (petname,petbreed,petgender,petbirth,petprofile,reg_id,uniquenumber) VALUES(%s,%s,%s,%s,%s,%s,%s)"
+            pet_sql = "INSERT INTO Pet (petname,petbreed,petgender,petbirth,petprofile,reg_id,uniquenumber) VALUES(%s,%s,%s,%s,%s,%s,%s)"
             val1 = (
             details['dogName'], details['dogBreed'], details['dogSex'], details['dogBirthYear'], profileUrl, rows,
             reg_num)
 
             cursor.execute(pet_sql, val1)
-            print("pet table insert complete")
+            print("Pet table insert complete")
 
             # 가장 최근 insert id 불러오기
             new_reg_send = "SELECT last_insert_id();"
@@ -181,7 +181,6 @@ def register():
         details = request.form
         profile = request.files['dogProfile']
         forlookup = request.files['dogNose1']
-        dogid = details['DogId']
         now = datetime.datetime.now()
         formoment = str(now.year) + str(now.month) + str(now.hour) + str(now.minute) + str(now.second)
         formoment1 = str(formoment)
@@ -199,13 +198,11 @@ def register():
    
     try:
         # 경로 설정
-        path = os.getcwd()+ '/nose/SVM-Classifier'
-        print(os.path.abspath(path))
-        classify_path = get_path(os.path.abspath(path))
-        print(classify_path)
-        os.chdir(classify_path)
-        createFolder(classify_path+'/testimage/%s' % (formoment1))
-        forlookup.save(classify_path+'/testimage/%s/%s.jpg' % (formoment1, formoment1))
+        path = os.getcwd()+ 'app/nose/SVM-Classifier'
+        print(path)
+        os.chdir(path)
+        createFolder(path+'/testimage/%s' % (formoment1))
+        forlookup.save(path+'/testimage/%s/%s.jpg' % (formoment1, formoment1))
         
         print("--- register start ---")
         # 5장 중 1장만 ml코드 돌리기
@@ -217,8 +214,8 @@ def register():
 
     except Exception as e:
         print("ML코드가 안돌아가서 등록 실패", e)
-        return jsonify({'message': 'fail',
-                        'dogid' : dogid})
+        return jsonify({'message': 'fail'
+                        })
 
     if compare[1] == '등록된강아지':
         try:
@@ -226,7 +223,7 @@ def register():
             cursor = isRegistered.cursor()
             foundDog = compare[0]
             print("found dog = " + foundDog)
-            lookup_sql = "SELECT * FROM pet WHERE uniqueNumber='%s'" % (foundDog)
+            lookup_sql = "SELECT * FROM Pet WHERE uniqueNumber='%s'" % (foundDog)
             cursor.execute(lookup_sql)
             registeredPetDatas = cursor.fetchall()
             print(registeredPetDatas)
@@ -278,7 +275,7 @@ def lookup():
         print(formomentLookup1)
 
         # 경로 설정
-        path = get_path(os.path.abspath(os.path.join(os.getcwd(), '..'))+'/nose/SVM-Classifier')
+        path = get_path('app/nose/SVM-Classifier')
         print(path)
         os.chdir(path)
         createFolder(path+'/testimage/%s' % (formomentLookup1))
@@ -309,7 +306,7 @@ def lookup():
         print(SVMresult[1]);
 
         if SVMresult[1] == '미등록강아지':
-            return jsonify({'data': {'isSuccess': False}, 'message': '조회된 강아지가 없습니다', 'dogid' : dogid})
+            return jsonify({'data': {'isSuccess': False}, 'message': '조회된 강아지가 없습니다'})
 
         # 조회 성공한 경우
         else:
@@ -323,7 +320,7 @@ def lookup():
                 accurancy1 = round(float(accurancy), 4) * 100
                 accurancy1 = str(accurancy1)
                 print(foundDog)
-                lookup_sql = "SELECT * FROM pet WHERE uniquenumber='%s'" % (foundDog)
+                lookup_sql = "SELECT * FROM Pet WHERE uniquenumber='%s'" % (foundDog)
                 cursor.execute(lookup_sql)
                 dogdata = cursor.fetchall()
                 print(dogdata)
@@ -335,7 +332,7 @@ def lookup():
                 petprofile = dogdata[0][5] + '.jpg'
 
                 # print(rows)
-                registerData_sql = "SELECT * FROM registrant WHERE id='%s'" % (rows)
+                registerData_sql = "SELECT * FROM Registrant WHERE id='%s'" % (rows)
                 cursor.execute(registerData_sql)
 
                 datas = cursor.fetchall()
@@ -347,11 +344,11 @@ def lookup():
                 lookupdb.commit()
 
                 return jsonify({'data':
-                                    {'registrant': registername, 'phoneNum': registerphone, 'email': registeremail,
+                                    {'Registrant': registername, 'phoneNum': registerphone, 'email': registeremail,
                                      'dogRegistNum': foundDog,
                                      'dogName': petname, 'dogBreed': petbreed, 'dogSex': petgender,
                                      'dogBirthYear': petbirth,
-                                     'dogProfile': petprofile, 'matchRate': accurancy1, 'isSuccess': True},
+                                     'dogProfile': petprofile, 'matchRate': accurancy1},
                                 'message': '조회를 성공했습니다'})
 
             except Exception as e:
