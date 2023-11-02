@@ -272,7 +272,6 @@ def register():
 def lookup():
     if request.method == 'POST':
         lookupimg = request.files['dogNose']
-        dogid = details['DogId']
         now1 = datetime.datetime.now()
         formomentLookup = str(now1.year) + str(now1.month) + str(now1.hour) + str(now1.minute) + str(now1.second)
         formomentLookup1 = str(formomentLookup)
