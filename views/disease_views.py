@@ -80,3 +80,11 @@ def analyze_disease():
 #     except Exception as e:
 #         print("Error retrieving result from database:", e)
 #         return jsonify({'error': 'Failed to retrieve result from database'})
+
+def db_connector():
+    connector = pymysql.connect(host='petconnect.cfqtdjr2iyqh.ap-northeast-2.rds.amazonaws.com',
+                                  user='admin',
+                                  password='Qwer12345678!',
+                                  db='petconnect',
+                                  charset='utf8')
+    return connector
