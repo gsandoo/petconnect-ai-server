@@ -15,7 +15,8 @@ bp = Blueprint('disease', __name__, url_prefix='/')
 
 # disease_model.pkl의 상대 경로 계산
 path = '../disease/SVM-Classifier/disease_model.pkl'
-classify_path = '/app/disease/SVM-Classifier/disease_model.pkl'
+classify_path = 'petconnect-ML/disease/SVM-Classifier/disease_model.pkl'
+
 # classify_path = get_path(os.path.abspath(path))
 
 with open(classify_path, 'rb') as model_file:
@@ -23,6 +24,7 @@ with open(classify_path, 'rb') as model_file:
 
 categories = ['atopy', 'hotspots', 'hair_loss', 'normal']
 
+label_to_int = {category: i for i, category in enumerate(categories)}
 
 @bp.route('/disease', methods=['POST'])
 def analyze_disease():
@@ -49,7 +51,9 @@ def analyze_disease():
 
         # Predict the disease category using SVM model
         predicted_label = svm_model.predict([hog_features])[0]
+        predicted_label = label_to_int[predicted_label]
         predicted_category = categories[predicted_label]
+
 
         # Remove the temporary image file
         os.remove(image_path)
@@ -57,29 +61,6 @@ def analyze_disease():
         # Return the result as a JSON response
         return jsonify({'result': predicted_category, 'message': 'success'})
         
-
-# @bp.route('/<dogRegistNum>', methods=['GET'])
-# def get_disease_result(dogRegistNum):
-#     try:
-#         db_conn = db_connector()
-#         cursor = db_conn.cursor()
-
-#         query = "SELECT predicted_category FROM disease_results WHERE dogRegistNum = %s"
-#         values = (dogRegistNum,)
-#         cursor.execute(query, values)
-#         result = cursor.fetchone()
-
-#         cursor.close()
-#         db_conn.close()
-
-#         if result:
-#             return jsonify({'result': result['predicted_category']})
-#         else:
-#             return jsonify({'error': 'No result found'})
-
-#     except Exception as e:
-#         print("Error retrieving result from database:", e)
-#         return jsonify({'error': 'Failed to retrieve result from database'})
 
 def db_connector():
     connector = pymysql.connect(host='petconnect.cfqtdjr2iyqh.ap-northeast-2.rds.amazonaws.com',
