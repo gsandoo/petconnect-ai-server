@@ -65,23 +65,23 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
     if data:
 
         try:
-            pk = "select id from Registrant WHERE regphone = '%s'" % (phone)
+            pk = "select id from Registrant WHERE regphone = '%s'" % (phone) # 뒷 4자리
             cursor.execute(pk)
-            pk1 = cursor.fetchone()
+            pk1 = cursor.fetchone() # 조회 해서 나온 행의 pk
 
             pet_sql = "INSERT INTO Pet (petname,petbreed,petbirth,petgender,petprofile,reg_id,uniquenumber) VALUES(%s,%s,%s,%s,%s,%s,%s)"
             val1 = (
             details['dogName'], details['dogBreed'], details['dogBirthYear'], details['dogSex'], profileUrl, pk1,
             reg_num)
 
-            cursor.execute(pet_sql, val1)
+            cursor.execute(pet_sql, val1) # 데이터 삽입
             # 가장 최근 insert id 불러오기
             reg_send = "SELECT last_insert_id();"
             cursor.execute(reg_send)
             latestid = cursor.fetchone()
 
             # db등록 정보 가져오기
-            fetchDB = "SELECT * FROM Pet WHERE id ='%s'" % (latestid[0])
+            fetchDB = "SELECT * FROM Pet WHERE id ='%s'" % (latestid[0]) # 가장 최근에 삽입된 데이터 행
             cursor.execute(fetchDB)
             send = cursor.fetchall()
             print(send)
@@ -93,9 +93,15 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
             petbreed = send[0][2]
             alreadyRegistered.commit()
 
-            return jsonify({'data': {'dogName': petname, 'dogRegistNum': reg_num, 'dogBreed': petbreed,
-                                    'dogBirthYear': petbirth, 'dogSex': petgender, 'dogProfile': petprofile,
-                                    'isSuccess': True}, 'message': '등록이 성공했습니다'})
+            return jsonify({         'dogName': petname, 
+                                     'dogRegistNum': reg_num, 
+                                     'dogBreed': petbreed,
+                                     'dogBirthYear': petbirth, 
+                                     'dogSex': petgender, 
+                                     'dogProfile': petprofile,
+                                     'isSuccess': True, 
+                                     'message': '등록이 성공했습니다'
+                                     })
 
         except Exception as e:
             alreadyRegistered.rollback()
@@ -149,13 +155,19 @@ def unique_register(details , dogNose2, dogNose3, dogNose4, dogNose5, profile, f
             new_petgender = new_all[0][3]
             new_petbirth = new_all[0][4] 
             new_petprofile = new_all[0][5] + '.jpg'
-            new_petnumber = new_all[0][7]
+            # new_petnumber = new_all[0][7]
             new_petbreed = new_all[0][2]
             newuser.commit()
             return jsonify(
-                {'data': {'dogName': new_petname, 'dogRegistNum': new_petnumber, 'dogBreed': new_petbreed,
-                        'dogBirthYear': new_petbirth, 'dogSex': new_petgender, 'dogProfile': new_petprofile,
-                        'isSuccess': True}, 'message': '등록이 성공했습니다'})
+                         {'dogName': new_petname, 
+                          'dogRegistNum': reg_num, 
+                          'dogBreed': new_petbreed,
+                          'dogBirthYear': new_petbirth, 
+                          'dogSex': new_petgender, 
+                          'dogProfile': new_petprofile,
+                          'isSuccess': True, 
+                          'message': '등록이 성공했습니다'
+                          })
 
         except Exception as e:
             newuser.rollback()
@@ -246,10 +258,14 @@ def register():
                     registeredPetProfile = registeredPetDatas[0][5] + '.jpg'
                 
                     return jsonify(
-                    {'data': {'dogRegistNum': foundDog, 'dogName': registeredPetName, 'dogBreed': registeredPetBreed,
-                            'dogSex': registeredPetSex,
-                            'dogBirthYear': registeredPetBirthYear, 'dogProfile': registeredPetProfile,
-                            'isSuccess': False}, 'message': '이미 등록된 강아지입니다.'})
+                             {'dogRegistNum': foundDog, 
+                              'dogName': registeredPetName, 
+                              'dogBreed': registeredPetBreed,
+                              'dogSex': registeredPetSex,
+                              'dogBirthYear': registeredPetBirthYear, 
+                              'dogProfile': registeredPetProfile,
+                              'isSuccess': False, 'message': '이미 등록된 강아지입니다.'
+                              })
                 except Exception as e:
                     print('registeredPetDatas 정보에서 예외가 발생했습니다', e)
                     return jsonify({'message': 'fail'})
@@ -315,7 +331,7 @@ def lookup():
         print(SVMresult[1]);
 
         if SVMresult[1] == '미등록강아지':
-            return jsonify({'data': {'isSuccess': False}, 'message': '조회된 강아지가 없습니다'})
+            return jsonify({'isSuccess': False, 'message': '조회된 강아지가 없습니다'})
 
         # 조회 성공한 경우
         else:
@@ -352,13 +368,14 @@ def lookup():
 
                 lookupdb.commit()
 
-                return jsonify({'data':
-                                    {'Registrant': registername, 'phoneNum': registerphone, 'email': registeremail,
+                return jsonify({
+                                    'registrant': registername, 'phoneNum': registerphone, 'email': registeremail,
                                      'dogRegistNum': foundDog,
                                      'dogName': petname, 'dogBreed': petbreed, 'dogSex': petgender,
                                      'dogBirthYear': petbirth,
-                                     'dogProfile': petprofile, 'matchRate': accurancy1},
-                                'message': '조회를 성공했습니다'})
+                                     'dogProfile': petprofile, 
+                                     'matchRate': accurancy1,
+                                     'message': '조회를 성공했습니다'})
 
             except Exception as e:
                 print("lookupdb에 예외가 발생했습니다", e)
@@ -391,7 +408,7 @@ def uniquenumber(details):
     #unique = details['dogName'][0] + str(details['phoneNum'][7:11])
     unique = str(details)
     # print(unique)
-    reg_num = (str(date_time.year) + str(date_time.month) + str(date_time.day) +str(date_time.second)+ str(a)+unique)
+    reg_num = (str(date_time.year) + str(date_time.month) + str(date_time.day) +str(date_time.second)+ str(a)+unique) #  년도 + 월 + 일 + 초 + 1~100 난수 + 뒷자리
     return reg_num
 
 
