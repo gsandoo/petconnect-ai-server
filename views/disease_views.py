@@ -15,7 +15,7 @@ bp = Blueprint('disease', __name__, url_prefix='/')
 
 # disease_model.pkl의 상대 경로 계산
 path = '../disease/SVM-Classifier/disease_model.pkl'
-classify_path = 'petconnect-ML/disease/SVM-Classifier/disease_model.pkl'
+classify_path = '/app/disease/SVM-Classifier/disease_model.pkl'
 
 # classify_path = get_path(os.path.abspath(path))
 

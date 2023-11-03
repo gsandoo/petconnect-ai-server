@@ -14,7 +14,7 @@ bp = Blueprint('eye', __name__, url_prefix='/')
 
 # eye.pkl의 상대 경로 계산
 path = '../eye/SVM-Classifier/eye_model.pkl' 
-classify_path = os.path.join(os.path.dirname(__file__), path).replace("\\", "/")
+classify_path = '/app/eye/SVM-Classifier/eye_model.pkl'
 #get_path(os.path.abspath(path))
 
 # SVM 모델 로드
