@@ -13,8 +13,8 @@ def get_path(path):
 bp = Blueprint('eye', __name__, url_prefix='/')
 
 # eye.pkl의 상대 경로 계산
-path = '../eye/SVM-Classifier/eye_model.pkl'
-classify_path = '/app/eye/SVM-Classifier/eye_model.pkl'
+path = '../eye/SVM-Classifier/eye_model.pkl' 
+classify_path = os.path.join(os.path.dirname(__file__), path).replace("\\", "/")
 #get_path(os.path.abspath(path))
 
 # SVM 모델 로드
@@ -23,6 +23,8 @@ with open(classify_path, 'rb') as model_file:
 
 categories = ['cataracts', 'cherry_eye', 'normal']
 
+
+label_to_int = {category: i for i, category in enumerate(categories)}
 
 @bp.route('/eye', methods=['POST'])
 def analyze_eye():
@@ -49,35 +51,12 @@ def analyze_eye():
 
         # Predict the eye category using SVM model
         predicted_label = svm_model.predict([hog_features])[0]
+        predicted_label = label_to_int[predicted_label]
         predicted_category = categories[predicted_label]
 
         # Remove the temporary image file
         os.remove(image_path)
-
         return jsonify({'result': predicted_category, 'message': 'success'})
-
-# @bp.route('/<dogRegistNum>', methods=['GET'])
-# def get_eye_result(dogRegistNum):
-#     try:
-#         db_conn = db_connector()
-#         cursor = db_conn.cursor()
-
-#         query = "SELECT predicted_category FROM eye_results WHERE dogRegistNum = %s"
-#         values = (dogRegistNum,)
-#         cursor.execute(query, values)
-#         result = cursor.fetchone()
-
-#         cursor.close()
-#         db_conn.close()
-
-#         if result:
-#             return jsonify({'result': result['predicted_category']})
-#         else:
-#             return jsonify({'error': 'No result found'})
-
-#     except Exception as e:
-#         print("Error retrieving result from database:", e)
-#         return jsonify({'error': 'Failed to retrieve result from database'})
 
 def db_connector():
     connector = pymysql.connect(host='petconnect.cfqtdjr2iyqh.ap-northeast-2.rds.amazonaws.com',
